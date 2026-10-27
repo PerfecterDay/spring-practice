@@ -21,4 +21,18 @@ public class DefaultR4jConfig {
                 .circuitBreakerConfig(CircuitBreakerConfig.ofDefaults())
                 .build());
     }
+
+
+    @Bean
+    public Customizer<Resilience4JCircuitBreakerFactory> slowCustomizer() {
+        return factory -> factory.configure(builder -> builder.circuitBreakerConfig(CircuitBreakerConfig.ofDefaults())
+                .timeLimiterConfig(TimeLimiterConfig.custom()
+                        .timeoutDuration(Duration.ofSeconds(2)).build()), "slow");
+    }
+
+    @Bean
+    public Customizer<Resilience4JCircuitBreakerFactory> slowCustomizer2() {
+        return factory -> factory.addCircuitBreakerCustomizer(circuitBreaker -> circuitBreaker.getEventPublisher()
+                .onError(System.out::println).onSuccess(System.out::println), "normalflux");
+    }
 }

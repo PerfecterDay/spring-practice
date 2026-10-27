@@ -1,6 +1,8 @@
 package com.w.codeer;
 
 
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
@@ -17,7 +19,7 @@ public class PayGatewayConfiguration {
 
 
     @Bean
-    public PayServiceGateway payServiceGateway(){
+    public PayServiceGateway payServiceGateway(CircuitBreakerFactory cf){
 
         RestClient restClient = RestClient.builder()
                 .build();
@@ -27,6 +29,10 @@ public class PayGatewayConfiguration {
                 = HttpServiceProxyFactory.builderFor(RestClientAdapter.create(restClient))
                 .build();
 
-        return httpServiceProxyFactory.createClient(PayServiceGateway.class);
+        PayServiceGateway client = httpServiceProxyFactory.createClient(PayServiceGateway.class);
+        CircuitBreaker circuitBreaker = cf.create("aaa", "bbb");
+
+        return client;
+//        return circuitBreaker.run(client::index, t -> "fallback: " + t.getMessage());
     }
 }

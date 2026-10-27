@@ -14,4 +14,8 @@ public interface PayServiceGateway {
 
     @GetExchange(url = "https://www.baidu.com")
     String index();
+
+
+    @GetExchange(url = "https://www.baidu.com")
+    String test();
 }
